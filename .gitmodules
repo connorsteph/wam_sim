@@ -1,0 +1,6 @@
+[submodule "src/barrett_model"]
+	path = src/barrett_model
+	url = https://github.com/jhu-lcsr/barrett_model.git
+[submodule "src/barrett_moveit"]
+	path = src/barrett_moveit
+	url = https://github.com/jhu-lcsr/barrett_moveit.git
