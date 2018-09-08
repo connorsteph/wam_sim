@@ -406,7 +406,7 @@ image_transport_DIR:PATH=/opt/ros/melodic/share/image_transport/cmake
 kdl_parser_DIR:PATH=/opt/ros/melodic/share/kdl_parser/cmake
 
 //Path to a library.
-lib:FILEPATH=/opt/ros/melodic/lib/libmoveit_move_group_capabilities_base.so
+lib:FILEPATH=/opt/ros/melodic/lib/libsrdfdom.so
 
 //The directory containing a CMake configuration file for message_filters.
 message_filters_DIR:PATH=/opt/ros/melodic/share/message_filters/cmake
@@ -440,6 +440,21 @@ moveit_ros_planning_interface_DIR:PATH=/opt/ros/melodic/share/moveit_ros_plannin
 
 //The directory containing a CMake configuration file for moveit_ros_warehouse.
 moveit_ros_warehouse_DIR:PATH=/opt/ros/melodic/share/moveit_ros_warehouse/cmake
+
+//Value Computed by CMake
+moveit_tutorials_BINARY_DIR:STATIC=/home/cjs/ros_workspaces/wam_sim/build/moveit_tutorials
+
+//Value Computed by CMake
+moveit_tutorials_SOURCE_DIR:STATIC=/home/cjs/ros_workspaces/wam_sim/src/moveit_tutorials
+
+//Value Computed by CMake
+moveit_visual_tools_BINARY_DIR:STATIC=/home/cjs/ros_workspaces/wam_sim/build/moveit_visual_tools
+
+//The directory containing a CMake configuration file for moveit_visual_tools.
+moveit_visual_tools_DIR:PATH=moveit_visual_tools_DIR-NOTFOUND
+
+//Value Computed by CMake
+moveit_visual_tools_SOURCE_DIR:STATIC=/home/cjs/ros_workspaces/wam_sim/src/moveit_visual_tools
 
 //The directory containing a CMake configuration file for object_recognition_msgs.
 object_recognition_msgs_DIR:PATH=/opt/ros/melodic/share/object_recognition_msgs/cmake
@@ -479,6 +494,9 @@ rospack_DIR:PATH=/opt/ros/melodic/share/rospack/cmake
 
 //The directory containing a CMake configuration file for rostime.
 rostime_DIR:PATH=/opt/ros/melodic/share/rostime/cmake
+
+//The directory containing a CMake configuration file for rviz_visual_tools.
+rviz_visual_tools_DIR:PATH=rviz_visual_tools_DIR-NOTFOUND
 
 //The directory containing a CMake configuration file for sensor_msgs.
 sensor_msgs_DIR:PATH=/opt/ros/melodic/share/sensor_msgs/cmake
@@ -634,7 +652,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=7
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=6
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

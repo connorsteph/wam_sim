@@ -2,6 +2,7 @@
 
 #include <ros/ros.h>
 #include <iostream>
+#include <cmath>
 #include <Eigen/Dense>
 #include "sensor_msgs/JointState.h"
 #include "sensor_msgs/Joy.h"
@@ -37,7 +38,7 @@ class Simulator
     Simulator(ros::NodeHandle nh_);
     ~Simulator();
 
-    void publish_joint_state();
+    void publish_joint_state(float t);
     void spin();
 
   private:

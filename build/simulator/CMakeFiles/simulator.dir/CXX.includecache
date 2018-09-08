@@ -27,6 +27,8 @@ ros/ros.h
 -
 iostream
 -
+cmath
+-
 Eigen/Dense
 -
 sensor_msgs/JointState.h

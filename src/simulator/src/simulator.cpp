@@ -18,15 +18,17 @@ Simulator::~Simulator()
     joy_sub.shutdown();
 }
 
-void Simulator::publish_joint_state()
+void Simulator::publish_joint_state(float t)
 {
     const robot_state::JointModelGroup *joint_model_group = kinematic_model->getJointModelGroup("arm");
     const std::vector<std::string> &joint_names = joint_model_group->getVariableNames();
     std::vector<double> joints;
-    geometry_msgs::Pose pose_msg;
     sensor_msgs::JointState joint_state_msg;
-    kinematic_state->setToRandomPositions(joint_model_group);
-    kinematic_state->copyJointGroupPositions(joint_model_group, joints);
+    // kinematic_state->setToRandomPositions(joint_model_group);
+    // kinematic_state->copyJointGroupPositions(joint_model_group, joints);
+    joints = {0, 0, 0, 0, 0, 0, 0};
+    
+    joints[3] = sin( t );
     for (size_t i = 0; i < joint_names.size(); ++i)
     {
         joint_state_msg.name.push_back(joint_names[i].c_str());
@@ -37,12 +39,22 @@ void Simulator::publish_joint_state()
 
 void Simulator::spin()
 {
-    ros::Rate r(0.5);
+    
+    int freq = 30;
+    double freq_dbl = (double) freq;
+    int period = 5;
+    int count = 0;
+    // bool pace = false;
+    int reset = freq * period;
+    float mu = 2.0 * M_PI / ( reset );
+    ros::Rate r ( freq_dbl );
     while (ros::ok())
     {
-        publish_joint_state();
+        publish_joint_state( mu * count );
+        count = (count + 1) % reset;
         ros::spinOnce();
         r.sleep();
+        // cout << r.sleep() << endl;
     }
 }
 
