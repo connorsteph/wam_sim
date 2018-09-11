@@ -34,8 +34,10 @@ void Simulator::teleop_grasp()
     goal_joint_angles = {0, 0, 0, 1.8, 0, 0, 0};
     move_group.setJointValueTarget(goal_joint_angles);
     move_group.plan(my_plan);
-    move_group.move();
     cout << "moving to initial position\n";
+    move_group.move();
+    cout << "ready.\n";
+    
     while (true)
     {
         ros::Rate(10).sleep();
@@ -45,7 +47,10 @@ void Simulator::teleop_grasp()
             teleop_move = false;
             cout << "Move: " << i++ << endl;
             move_group.getCurrentState()->copyJointGroupPositions(joint_model_group, joints);
-            cout << "Translation: \n" << move_group.getCurrentState()->getGlobalLinkTransform("wam/wrist_palm_stump_link").translation() << "\n*****************" << endl;
+            // cout << "Translation: \n"
+            //      << move_group.getCurrentState()->getGlobalLinkTransform("wam/wrist_palm_stump_link").translation() << "\n*****************" << endl;
+            cout << "Rotation: \n"
+                 << move_group.getCurrentState()->getGlobalLinkTransform("wam/wrist_palm_stump_link").rotation() << "\n*****************" << endl;
             for (int i = 0; i < joints.size(); ++i)
             {
                 current_joint_angles[i] = joints[i];
@@ -54,14 +59,16 @@ void Simulator::teleop_grasp()
             c = teleop_grasp_step(); // sets global variable goal_joint_angles in sphere move
             move_group.setJointValueTarget(goal_joint_angles);
             move_group.plan(my_plan);
+            cout << "moving.\n";
             move_group.move();
+            cout << "done.\n";
             switch (c)
             {
             case 0: // convergence - return early (OR IK FAILURE!!)
                 cout << "Case 0 - finishing\n";
                 return;
             case 2: // step completed successfully
-                cout << "NEXT!\n";
+                // cout << "NEXT!\n";
                 break;
             }
         }
@@ -118,12 +125,13 @@ int Simulator::teleop_grasp_step()
             return 2;
         }
     }
-    object_position[0] += 0.00333 * controller_axes[1];
-    object_position[1] += 0.00167 * controller_axes[0]; // 5 cm/s due to weak wrist joint
+    object_position[0] += 0.1 * controller_axes[1];
+    object_position[1] += 0.1 * controller_axes[0]; // 5 cm/s due to weak wrist joint
     control_vec[0] = (controller_buttons[6] - controller_buttons[7]);
     control_vec[1] = controller_axes[3];
     control_vec[2] = -controller_axes[2];
     control_vec[3] = controller_buttons[5] - controller_buttons[4];
+    cout << "Control vec: \n" << control_vec << endl;
     if (Simulator::sphere_move(control_vec))
     {
         return 2;
@@ -141,14 +149,14 @@ bool Simulator::sphere_move(const Eigen::VectorXd &control_vec)
     Eigen::Vector3d rpy;
     Eigen::VectorXd full_pose(7);
     // double delta_radians = 0.017453292519; // one degree
-    double delta_radians = M_PI / 240; // 45 degrees per second at 30Hz
+    double delta_radians = M_PI / 45; // 45 degrees per second at 30Hz
     Eigen::Vector3d rel_cart_pos;
     Eigen::Matrix3d rotator;
     Eigen::Vector3d axis;
     Eigen::VectorXd gains(6);
     vector<double> joints;
     rel_cart_pos = spherical_to_cartesian(spherical_position);
-    cout << "Cartesian pos:" << rel_cart_pos << endl;
+    // cout << "Cartesian pos:" << rel_cart_pos << endl;
     if (abs(control_vec[1]) > 0 || abs(control_vec[2]) > 0)
     {
         axis = Eigen::Vector3d::UnitX() * (control_vec[2]) + Eigen::Vector3d::UnitY() * (control_vec[1]);
@@ -158,10 +166,10 @@ bool Simulator::sphere_move(const Eigen::VectorXd &control_vec)
         spherical_position = cartesian_to_spherical(rel_cart_pos);
     }
     pose_msg = get_pose(object_position, getToolPosition(current_joint_angles, total_joints));
-    cout << "Pose msg: " << pose_msg << endl;
+    // cout << "Pose msg: " << pose_msg << endl;
     bool found_ik = kinematic_state->setFromIK(joint_model_group, pose_msg, "wam/wrist_palm_stump_link", 1, 0.05);
     if (found_ik)
-    {   
+    {
         cout << "FOUND SOLUTION 1" << endl;
         kinematic_state->copyJointGroupPositions(joint_model_group, joints);
         for (size_t i = 0; i < joint_names.size(); ++i)
@@ -169,13 +177,14 @@ bool Simulator::sphere_move(const Eigen::VectorXd &control_vec)
             goal_joint_angles[i] = joints[i];
         }
         yaw_offset = current_joint_angles[6] - goal_joint_angles[6];
-        spherical_position[0] += 0.003 * control_vec[0];
-        yaw_offset -= 6.0 * delta_radians * control_vec[3];
+        spherical_position[0] += 0.1 * control_vec[0];
+        yaw_offset -= 3.0 * delta_radians * control_vec[3];
     }
     else
     {
         yaw_offset = 0.0;
     }
+    cout << "yaw offset: " << yaw_offset << endl;
     cout << "Spherical position: \n**************\n"
          << spherical_position << "\n***********" << endl;
     rel_cart_pos = spherical_to_cartesian(spherical_position);
@@ -200,6 +209,7 @@ bool Simulator::sphere_move(const Eigen::VectorXd &control_vec)
     pose_msg.orientation.y = ortn[1];
     pose_msg.orientation.z = ortn[2];
     pose_msg.orientation.w = ortn[3];
+    
     found_ik = kinematic_state->setFromIK(joint_model_group, pose_msg, "wam/wrist_palm_stump_link", 5, 0.1);
     if (found_ik)
     {

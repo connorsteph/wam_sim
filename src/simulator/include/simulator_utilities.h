@@ -147,5 +147,6 @@ Eigen::Vector3d getToolPosition(const Eigen::VectorXd& joint_positions, int dof)
     {
         tool_pos[j] = hom_mat(j, 3);
     }
+    tool_pos[2] += 1.0;
     return tool_pos;
 }
