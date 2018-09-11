@@ -45,6 +45,11 @@ target_link_libraries(simulator
   ${catkin_LIBRARIES}
 )
 
+add_executable(simulator_v2 src/simulator_v2.cpp)
+target_link_libraries(simulator_v2
+  ${catkin_LIBRARIES}
+)
+
 add_executable(sim_teleop src/sim_teleop.cpp)
 target_link_libraries(simulator
   ${catkin_LIBRARIES}
